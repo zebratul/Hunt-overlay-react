@@ -10,6 +10,7 @@
   height: auto;
   top: 0;
   left: 0;
+  transition: opacity 0.5s ease-in-out; /* Fade transition */
 }
 
 .vine-main {
@@ -22,6 +23,8 @@
   width: 1200px;
   margin-left: 100px;
   margin-top: 15px;
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.5s ease-in-out;
 }
 
 .vine-stage-2 {
@@ -29,6 +32,8 @@
   width: 300px;
   margin-left: 475px;
   margin-top: 75px;
+  opacity: 0; /* Initially hidden */
+  transition: opacity 0.5s ease-in-out;
 }
 
 .foreground-image.skull {
@@ -37,4 +42,6 @@
   top: 0;
   left: 0;
   z-index: 4;
+  opacity: 1;
+  transition: opacity 0.5s ease-in-out;
 }

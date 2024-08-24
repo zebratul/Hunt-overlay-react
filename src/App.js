@@ -56,21 +56,28 @@ function App() {
   return (
     <div className="overlay-container">
       {/* Background images */}
-      {healthState !== 'FULL' && (
-        <img src={vineStage2} alt="Vine Stage 2" className="background-image vine-stage-2" />
-      )}
-      {healthState !== 'FULL' && (
-        <img src={leaves} alt="Leaves" className="background-image leaves" />
-      )}
+      <img
+        src={vineStage2}
+        alt="Vine Stage 2"
+        className="background-image vine-stage-2"
+        style={{ opacity: healthState !== 'FULL' ? 1 : 0 }}
+      />
+      <img
+        src={leaves}
+        alt="Leaves"
+        className="background-image leaves"
+        style={{ opacity: healthState !== 'FULL' ? 1 : 0 }}
+      />
       
       <img src={vineMain} alt="Vine Main" className="background-image vine-main" />
 
       {/* Skull image */}
-      {healthState === 'CRITICAL' ? (
-        <img src={skullCritical} alt="Skull Critical" className="foreground-image skull" />
-      ) : (
-        <img src={skullMain} alt="Skull Main" className="foreground-image skull" />
-      )}
+      <img
+        src={healthState === 'CRITICAL' ? skullCritical : skullMain}
+        alt="Skull"
+        className="foreground-image skull"
+        style={{ opacity: healthState === 'DEAD' ? 0 : 1 }}
+      />
     </div>
   );
 }
