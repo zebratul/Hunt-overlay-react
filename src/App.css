@@ -1,16 +1,32 @@
-.overlay {
-  position: fixed;
-  top: 10px;
-  left: 10px;
-  color: white;
-  font-size: 3rem;
-  background-color: rgba(0, 0, 0, 0.5);
-  padding: 10px;
-  border-radius: 5px;
-  z-index: 9999;
+.overlay-container {
+  position: relative;
+  width: 1397px;
+  height: 387px;
 }
 
-h1 {
-  margin: 0;
-  font-family: 'Arial', sans-serif;
+.background-image {
+  position: absolute;
+  width: 100%;
+  height: auto;
+  top: 0;
+  left: 0;
+}
+
+.vine-main {
+  z-index: 3;
+}
+
+.leaves {
+  z-index: 2;
+}
+
+.vine-stage-2 {
+  z-index: 1;
+}
+
+.foreground-image.skull {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 4;
 }

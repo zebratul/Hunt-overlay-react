@@ -3,6 +3,13 @@ import io from 'socket.io-client';
 import tmi from 'tmi.js';
 import './App.css';
 
+// Importing images
+import vineMain from './images/vine-main-3d.png';
+import skullMain from './images/skull-main.png';
+import skullCritical from './images/skull-critical.png';
+import leaves from './images/leaves.png';
+import vineStage2 from './images/vine-stage-2.png';
+
 // Constants
 const SERVER_URL = 'https://hunt-overlay.onrender.com'; // Replace with your server's URL
 
@@ -47,8 +54,23 @@ function App() {
   }, [healthState]);
 
   return (
-    <div className="overlay">
-      <h1>Health State: {healthState}</h1>
+    <div className="overlay-container">
+      {/* Background images */}
+      {healthState !== 'FULL' && (
+        <img src={vineStage2} alt="Vine Stage 2" className="background-image vine-stage-2" />
+      )}
+      {healthState !== 'FULL' && (
+        <img src={leaves} alt="Leaves" className="background-image leaves" />
+      )}
+      
+      <img src={vineMain} alt="Vine Main" className="background-image vine-main" />
+
+      {/* Skull image */}
+      {healthState === 'CRITICAL' ? (
+        <img src={skullCritical} alt="Skull Critical" className="foreground-image skull" />
+      ) : (
+        <img src={skullMain} alt="Skull Main" className="foreground-image skull" />
+      )}
     </div>
   );
 }
