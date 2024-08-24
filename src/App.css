@@ -13,18 +13,26 @@
 }
 
 .vine-main {
+  margin-top: 5px;
   z-index: 3;
 }
 
 .leaves {
   z-index: 2;
+  width: 1200px;
+  margin-left: 100px;
+  margin-top: 15px;
 }
 
 .vine-stage-2 {
   z-index: 1;
+  width: 300px;
+  margin-left: 475px;
+  margin-top: 75px;
 }
 
 .foreground-image.skull {
+  margin-left: 560px;
   position: absolute;
   top: 0;
   left: 0;
