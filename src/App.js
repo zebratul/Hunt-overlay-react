@@ -7,6 +7,7 @@ import './App.css';
 import vineMain from './images/vine-main-3d.png';
 import skullMain from './images/skull-main.png';
 import skullCritical from './images/skull-critical.png';
+import skullDead from './images/skull-dead.png';
 import leaves from './images/leaves.png';
 import vineStage2 from './images/vine-stage-2.png';
 
@@ -73,10 +74,16 @@ function App() {
 
       {/* Skull image */}
       <img
-        src={healthState === 'CRITICAL' ? skullCritical : skullMain}
+        src={
+          healthState === 'DEAD'
+            ? skullDead
+            : healthState === 'CRITICAL'
+            ? skullCritical
+            : skullMain
+        }
         alt="Skull"
         className="foreground-image skull"
-        style={{ opacity: healthState === 'DEAD' ? 0 : 1 }}
+        style={{ opacity: 1 }}
       />
     </div>
   );
