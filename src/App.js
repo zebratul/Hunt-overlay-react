@@ -104,10 +104,6 @@ function Controls() {
 function App() {
   return (
     <Router>
-      <nav>
-        <Link to="/">Overlay</Link>
-        <Link to="/controls">Controls</Link>
-      </nav>
       <Routes>
         <Route path="/" element={<Overlay />} />
         <Route path="/controls" element={<Controls />} />
