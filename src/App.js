@@ -45,12 +45,14 @@ function Overlay() {
       console.log('res', tokenResponse);
       const tokenData = await tokenResponse.json();
       const token = tokenData.access_token;
+      console.log('token', token);
+      
 
       // Create a new Twitch client
       const client = new tmi.Client({
         options: { debug: true },
         identity: {
-          username: 'YourTwitchBotUsername', // Replace with your bot's username
+          username: 'The Watcher', // Replace with your bot's username
           password: `oauth:${token}`, // Use the token received from your backend
         },
         channels: ['zebratul'], // Replace with your Twitch channel name
