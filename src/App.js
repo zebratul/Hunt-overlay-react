@@ -32,56 +32,56 @@ function Overlay() {
   }, []);
 
   useEffect(() => {
-    const connectToTwitch = async () => {
-      try {
-        // Fetch the Twitch token from the backend
-        const tokenResponse = await fetch(`${SERVER_URL}/twitch-token`);
-        const tokenData = await tokenResponse.json();
-        const token = tokenData.access_token;
-
-        // Create a new Twitch client
-        const client = new tmi.Client({
-          options: { debug: true },
-          identity: {
-            username: 'YourTwitchBotUsername', // Replace with your bot's username
-            password: `oauth:${token}`, // Use the token received from your backend
-          },
-          channels: ['zebratul'], // Replace with your Twitch channel name
-        });
-
-        // Connect to Twitch chat
-        client.connect();
-
-        // Listen for messages
-        client.on('message', (channel, tags, message, self) => {
-          if (message.toLowerCase() === '!hp') {
-            client.say(channel, `Current health state is: ${healthState}`);
-          } else if (message.toLowerCase() === '!jump') {
-            sendCommand('JUMP');
-          } else if (message.toLowerCase() === '!shoot') {
-            sendCommand('LMB');
-          }
-        });
-
-        // Handle 401 Unauthorized errors
-        client.on('connected', () => {
-          setTwitchClient(client);
-        });
-
-        client.on('disconnected', (reason) => {
-          console.error('Disconnected from Twitch:', reason);
-          if (reason === 'Authentication failed') {
-            refreshTwitchToken();
-          }
-        });
-
-      } catch (error) {
-        console.error('Error connecting to Twitch:', error);
-      }
-    };
-
     connectToTwitch();
   }, [healthState]);
+
+  const connectToTwitch = async () => {
+    try {
+      // Fetch the Twitch token from the backend
+      const tokenResponse = await fetch(`${SERVER_URL}/twitch-token`);
+      const tokenData = await tokenResponse.json();
+      const token = tokenData.access_token;
+
+      // Create a new Twitch client
+      const client = new tmi.Client({
+        options: { debug: true },
+        identity: {
+          username: 'YourTwitchBotUsername', // Replace with your bot's username
+          password: `oauth:${token}`, // Use the token received from your backend
+        },
+        channels: ['zebratul'], // Replace with your Twitch channel name
+      });
+
+      // Connect to Twitch chat
+      client.connect();
+
+      // Listen for messages
+      client.on('message', (channel, tags, message, self) => {
+        if (message.toLowerCase() === '!hp') {
+          client.say(channel, `Current health state is: ${healthState}`);
+        } else if (message.toLowerCase() === '!jump') {
+          sendCommand('JUMP');
+        } else if (message.toLowerCase() === '!shoot') {
+          sendCommand('LMB');
+        }
+      });
+
+      // Handle 401 Unauthorized errors
+      client.on('connected', () => {
+        setTwitchClient(client);
+      });
+
+      client.on('disconnected', (reason) => {
+        console.error('Disconnected from Twitch:', reason);
+        if (reason === 'Authentication failed') {
+          refreshTwitchToken();
+        }
+      });
+
+    } catch (error) {
+      console.error('Error connecting to Twitch:', error);
+    }
+  };
 
   const sendCommand = async (command) => {
     await fetch(`${SERVER_URL}/command`, {
