@@ -35,12 +35,14 @@ function Overlay() {
 
   useEffect(() => {
     connectToTwitch();
-  }, [healthState]);
+  }, []);
 
   const connectToTwitch = async () => {
     try {
       // Fetch the Twitch token from the backend
+      console.log('requesting token');      
       const tokenResponse = await fetch(`${SERVER_URL}/twitch-token`);
+      console.log('res', tokenResponse);
       const tokenData = await tokenResponse.json();
       const token = tokenData.access_token;
 
