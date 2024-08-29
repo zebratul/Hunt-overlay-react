@@ -39,6 +39,15 @@ function Overlay() {
 
   const connectToTwitch = async () => {
     try {
+      //refresh the token
+      console.log('refreshin');
+      
+      const response = await fetch(`${SERVER_URL}/refresh-token`, {
+        method: 'POST',
+      });
+      const data = await response.json();
+      console.log('refresh data', data);
+      
       // Fetch the Twitch token from the backend
       console.log('requesting token');      
       const tokenResponse = await fetch(`${SERVER_URL}/twitch-token`);
@@ -52,7 +61,7 @@ function Overlay() {
       const client = new tmi.Client({
         options: { debug: true },
         identity: {
-          username: 'The Watcher', // Replace with your bot's username
+          username: 'TheWatcher', // Replace with your bot's username
           password: `oauth:${token}`, // Use the token received from your backend
         },
         channels: ['zebratul'], // Replace with your Twitch channel name
