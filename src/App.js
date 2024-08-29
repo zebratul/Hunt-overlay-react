@@ -14,9 +14,11 @@ import vineStage2 from './images/vine-stage-2.png';
 
 // Constants
 const SERVER_URL = 'https://hunt-overlay.onrender.com'; // Replace with your server's URL
+const COOLDOWN_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
 
 function Overlay() {
   const [healthState, setHealthState] = useState('FULL');
+  const [cooldowns, setCooldowns] = useState({});
   const [twitchClient, setTwitchClient] = useState(null);
 
   useEffect(() => {
@@ -60,9 +62,9 @@ function Overlay() {
         if (message.toLowerCase() === '!hp') {
           client.say(channel, `Current health state is: ${healthState}`);
         } else if (message.toLowerCase() === '!jump') {
-          sendCommand('JUMP');
+          handleCommand(tags['display-name'], 'JUMP');
         } else if (message.toLowerCase() === '!shoot') {
-          sendCommand('LMB');
+          handleCommand(tags['display-name'], 'LMB');
         }
       });
 
@@ -80,6 +82,29 @@ function Overlay() {
 
     } catch (error) {
       console.error('Error connecting to Twitch:', error);
+    }
+  };
+
+  const handleCommand = (username, command) => {
+    const currentTime = Date.now();
+
+    if (
+      healthState === 'CRITICAL' ||
+      !cooldowns[username] ||
+      currentTime - cooldowns[username][command] > COOLDOWN_TIME
+    ) {
+      sendCommand(command);
+
+      // Update cooldown time for the user
+      setCooldowns(prevCooldowns => ({
+        ...prevCooldowns,
+        [username]: {
+          ...prevCooldowns[username],
+          [command]: currentTime,
+        },
+      }));
+    } else {
+      console.log(`${username} is on cooldown for ${command}`);
     }
   };
 
