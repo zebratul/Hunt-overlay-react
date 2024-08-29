@@ -45,8 +45,8 @@ function Overlay() {
       const response = await fetch(`${SERVER_URL}/refresh-token`, {
         method: 'POST',
       });
-      const data = await response.json();
-      console.log('refresh data', data);
+
+      console.log('refresh data', response);
       
       // Fetch the Twitch token from the backend
       console.log('requesting token');      
