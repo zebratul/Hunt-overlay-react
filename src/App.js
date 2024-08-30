@@ -14,11 +14,10 @@ import vineStage2 from './images/vine-stage-2.png';
 
 // Constants
 const SERVER_URL = 'https://hunt-overlay.onrender.com'; // Replace with your server's URL
-const COOLDOWN_TIME = 5 * 60 * 1000; // 5 minutes in milliseconds
+const CHATBOT_TEXT = 'The shadows wisper: ';
 
 function Overlay() {
   const [healthState, setHealthState] = useState('FULL');
-  const [cooldowns, setCooldowns] = useState({});
   const [twitchClient, setTwitchClient] = useState(null);
 
   useEffect(() => {
@@ -39,23 +38,15 @@ function Overlay() {
 
   const connectToTwitch = async () => {
     try {
-      //refresh the token
-      console.log('refreshin');
-      
+      // Refresh the token
       const response = await fetch(`${SERVER_URL}/refresh-token`, {
         method: 'POST',
       });
 
-      console.log('refresh data', response);
-      
       // Fetch the Twitch token from the backend
-      console.log('requesting token');      
       const tokenResponse = await fetch(`${SERVER_URL}/twitch-token`);
-      console.log('res', tokenResponse);
       const tokenData = await tokenResponse.json();
       const token = tokenData.access_token;
-      console.log('token', token);
-      
 
       // Create a new Twitch client
       const client = new tmi.Client({
@@ -73,11 +64,11 @@ function Overlay() {
       // Listen for messages
       client.on('message', (channel, tags, message, self) => {
         if (message.toLowerCase() === '!hp') {
-          client.say(channel, `Current health state is: ${healthState}`);
+          client.say(channel, `${CHATBOT_TEXT} Current health is: ${healthState}`);
         } else if (message.toLowerCase() === '!jump') {
-          handleCommand(tags['display-name'], 'JUMP');
+          handleCommand(tags['display-name'], 'JUMP', channel, client);
         } else if (message.toLowerCase() === '!shoot') {
-          handleCommand(tags['display-name'], 'LMB');
+          handleCommand(tags['display-name'], 'LMB', channel, client);
         }
       });
 
@@ -98,35 +89,28 @@ function Overlay() {
     }
   };
 
-  const handleCommand = (username, command) => {
-    const currentTime = Date.now();
+  const handleCommand = async (username, command, channel, client) => {
+    try {
+      const response = await fetch(`${SERVER_URL}/command`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ command }),
+      });
 
-    if (
-      healthState === 'CRITICAL' ||
-      !cooldowns[username] ||
-      currentTime - cooldowns[username][command] > COOLDOWN_TIME
-    ) {
-      sendCommand(command);
+      const result = await response.json();
+      console.log('comand result', result);
 
-      // Update cooldown time for the user
-      setCooldowns(prevCooldowns => ({
-        ...prevCooldowns,
-        [username]: {
-          ...prevCooldowns[username],
-          [command]: currentTime,
-        },
-      }));
-    } else {
-      console.log(`${username} is on cooldown for ${command}`);
+      if (result.status === 'success') {
+        client.say(channel, `${CHATBOT_TEXT}@${username} Your words are my command.`);
+      } else if (result.status === 'cooldown') {
+        client.say(channel, `${CHATBOT_TEXT}@${username} You cannot do ${command} yet.`);
+      } else {
+        client.say(channel, `${CHATBOT_TEXT}@${username} A mishap: ${result.message}`);
+      }
+    } catch (error) {
+      client.say(channel, `${CHATBOT_TEXT}@${username} A request has gone awry. Perhaps, try again later.`);
+      console.error('Error sending command:', error);
     }
-  };
-
-  const sendCommand = async (command) => {
-    await fetch(`${SERVER_URL}/command`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ command }),
-    });
   };
 
   const refreshTwitchToken = async () => {
