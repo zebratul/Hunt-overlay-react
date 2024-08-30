@@ -14,7 +14,7 @@ import vineStage2 from './images/vine-stage-2.png';
 
 // Constants
 const SERVER_URL = 'https://hunt-overlay.onrender.com'; // Replace with your server's URL
-const CHATBOT_TEXT = 'The shadows wisper: ';
+const CHATBOT_TEXT = 'The shadows whisper: ';
 
 function Overlay() {
   const [healthState, setHealthState] = useState('FULL');
@@ -89,26 +89,26 @@ function Overlay() {
     }
   };
 
-  const handleCommand = async (username, command, channel, client) => {
+  const handleCommand = async (userName, command, channel, client) => {
     try {
       const response = await fetch(`${SERVER_URL}/command`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ command }),
+        body: JSON.stringify({ command, userName }),
       });
 
       const result = await response.json();
       console.log('comand result', result);
 
       if (result.status === 'success') {
-        client.say(channel, `${CHATBOT_TEXT}@${username} Your words are my command.`);
+        client.say(channel, `${CHATBOT_TEXT}@${userName} Your words are my command.`);
       } else if (result.status === 'cooldown') {
-        client.say(channel, `${CHATBOT_TEXT}@${username} You cannot do ${command} yet.`);
+        client.say(channel, `${CHATBOT_TEXT}@${userName} You cannot do ${command} yet.`);
       } else {
-        client.say(channel, `${CHATBOT_TEXT}@${username} A mishap: ${result.message}`);
+        client.say(channel, `${CHATBOT_TEXT}@${userName} A mishap: ${result.message}`);
       }
     } catch (error) {
-      client.say(channel, `${CHATBOT_TEXT}@${username} A request has gone awry. Perhaps, try again later.`);
+      client.say(channel, `${CHATBOT_TEXT}@${userName} A request has gone awry. Perhaps, try again later.`);
       console.error('Error sending command:', error);
     }
   };
