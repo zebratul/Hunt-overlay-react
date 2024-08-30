@@ -15,10 +15,12 @@ import vineStage2 from './images/vine-stage-2.png';
 // Constants
 const SERVER_URL = 'https://hunt-overlay.onrender.com'; // Replace with your server's URL
 const CHATBOT_TEXT = 'The shadows whisper: ';
+const WELCOME_MESSAGE = `${CHATBOT_TEXT} Welcome to the stream! The options are: !shoot to fire, !jump to well... jump`;
 
 function Overlay() {
   const [healthState, setHealthState] = useState('FULL');
   const [twitchClient, setTwitchClient] = useState(null);
+  const [lastBotMessage, setLastBotMessage] = useState('');
 
   useEffect(() => {
     const socket = io(SERVER_URL);
@@ -35,6 +37,15 @@ function Overlay() {
   useEffect(() => {
     connectToTwitch();
   }, []);
+
+  useEffect(() => {
+    // Set interval to send a welcome message every 5 minutes
+    const intervalId = setInterval(() => {
+      sendWelcomeMessage();
+    }, 300000); // 300,000 ms = 5 minutes
+
+    return () => clearInterval(intervalId);
+  }, [twitchClient, lastBotMessage]);
 
   const connectToTwitch = async () => {
     try {
@@ -65,6 +76,8 @@ function Overlay() {
       client.on('message', (channel, tags, message, self) => {
         if (message.toLowerCase() === '!hp') {
           client.say(channel, `${CHATBOT_TEXT} Current health is: ${healthState}`);
+        } else if (message.toLowerCase() === '!commands') {
+          client.say(channel, `${CHATBOT_TEXT} The options are: !shoot to fire, !jump to well... jump`);
         } else if (message.toLowerCase() === '!jump') {
           handleCommand(tags['display-name'], 'JUMP', channel, client);
         } else if (message.toLowerCase() === '!shoot') {
@@ -98,18 +111,25 @@ function Overlay() {
       });
 
       const result = await response.json();
-      console.log('comand result', result);
+      console.log('command result', result);
 
       if (result.status === 'success') {
         client.say(channel, `${CHATBOT_TEXT}@${userName} Your words are my command.`);
       } else if (result.status === 'cooldown') {
-        client.say(channel, `${CHATBOT_TEXT}@${userName} You cannot do ${command} yet.`);
+        client.say(channel, `${CHATBOT_TEXT}@${userName} You cannot do that yet.`);
       } else {
         client.say(channel, `${CHATBOT_TEXT}@${userName} A mishap: ${result.message}`);
       }
     } catch (error) {
       client.say(channel, `${CHATBOT_TEXT}@${userName} A request has gone awry. Perhaps, try again later.`);
       console.error('Error sending command:', error);
+    }
+  };
+
+  const sendWelcomeMessage = () => {
+    if (twitchClient && lastBotMessage !== WELCOME_MESSAGE) {
+      twitchClient.say('zebratul', WELCOME_MESSAGE);
+      setLastBotMessage(WELCOME_MESSAGE);
     }
   };
 
